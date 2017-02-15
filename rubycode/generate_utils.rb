@@ -4,8 +4,8 @@ require 'optparse'
 
 @options= {
 	:open_strings		=> %w[E A D G B E],
+	# :number_of_frets	=> 20,
 	:strings_to_use		=> 0..5,
-	:number_of_frets	=> 20,
 	:position_size		=> 6,
 	:starting_fret		=> 0,
 	:chord_progression	=> "C,E,G-F,A,C-G,B,D".split("-").map{|chord| chord.split(",").map{|note_name| Music::Note.new(note_name)}}
@@ -16,11 +16,11 @@ OptionParser.new do |opts|
 	opts.on("-o", "--open_strings STRINGS", "Open strings") do |o|
 		@options[:open_strings]= o.split(",")
 	end
+	# opts.on("-n", "--number_of_frets NUM", "Number of frets on guitar") do |n|
+	# 	@options[:number_of_frets]= n.to_i
+	# end
 	opts.on("-t", "--strings_to_use STRING", "Strings to use") do |t|
-		@options[:strings_to_use] = t.split(",").map{|string_num| string_num.include?("-") ? ((string_num.split("-")[0].to_i)..(string_num.split("-")[1].to_i)).to_a : string_num}.flatten
-	end
-	opts.on("-n", "--number_of_frets NUM", "Number of frets") do |n|
-		@options[:number_of_frets]= n.to_i
+		@options[:strings_to_use] = t.split(",").map{|string_num| string_num.include?("-") ? ((string_num.split("-")[0].to_i - 1)..(string_num.split("-")[1].to_i - 1)).to_a : string_num - 1}.flatten
 	end
 	opts.on("-s", "--position_size SIZE", "Position size") do |s|
 		@options[:position_size]= s.to_i
@@ -33,6 +33,7 @@ OptionParser.new do |opts|
 	end
 
 end.parse!
+@options[:number_of_frets] = @options[:starting_fret] + @options[:position_size]
 
 required_options = @options.select{|opt,val| val.nil?}
 if !required_options.empty?
@@ -69,7 +70,7 @@ def note_to_number(note)
 	end
 	# ap base
 
-	return base
+	return base%7
 end
 
 # def transpose(matrix)
@@ -142,7 +143,7 @@ chord_shapes.each do |name, chord_shape|
 	chord_shape.reverse!
 	chord_shape.each do |string|
 		string.each do |fret|
-			print fret
+			print (fret + "  ")[0..2]
 		end
 		puts
 	end
