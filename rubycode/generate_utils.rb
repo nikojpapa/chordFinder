@@ -8,7 +8,7 @@ require 'optparse'
 	:number_of_frets	=> 20,
 	:position_size		=> 6,
 	:starting_fret		=> 0,
-	:chord_progression	=> %w[C E G].map{|chord| Music::Chord.new(chord)}
+	:chord_progression	=> "C,E,G-F,A,C-G,B,D".split("-").map{|chord| chord.split(",").map{|note_name| Music::Note.new(note_name)}}
 }
 
 OptionParser.new do |opts|
@@ -29,7 +29,7 @@ OptionParser.new do |opts|
 		@options[:starting_fret]= f.to_i
 	end
 	opts.on("-c", "--chord_progression PROG", "Chord Progression") do |c|
-		@options[:chord_progression]= c.split(",").map{|chord| Music::Chord.new(chord.upcase)}
+		@options[:chord_progression]= c.split("-").map{|chord| chord.split(",").map{|note_name| Music::Note.new(note_name)}}
 	end
 
 end.parse!
@@ -72,22 +72,22 @@ def note_to_number(note)
 	return base
 end
 
-def transpose(matrix)
-  new_matrix = []
+# def transpose(matrix)
+#   new_matrix = []
 
-  i = 0
-  while i < matrix.size
-    new_matrix[i] = []
-    j = 0  # move this here
-    while j < matrix.size
-      new_matrix[i] << matrix[j][i]
-      j += 1
-    end
-    i += 1
-  end
+#   i = 0
+#   while i < matrix.size
+#     new_matrix[i] = []
+#     j = 0  # move this here
+#     while j < matrix.size
+#       new_matrix[i] << matrix[j][i]
+#       j += 1
+#     end
+#     i += 1
+#   end
 
-  return new_matrix
-end
+#   return new_matrix
+# end
 
 @fretboard = []
 @options[:open_strings].each do |open_string_note|
@@ -111,7 +111,7 @@ end
 chord_shapes = {}
 @options[:chord_progression].each do |chord|
 	fret_region = []
-	notes_in_chord = chord.notes#.map(&:name)
+	notes_in_chord = chord#.notes#.map(&:name)
 
 	chord_to_num_translator = {}
 	note_names_in_chord = notes_in_chord.map(&:name)
@@ -133,7 +133,7 @@ chord_shapes = {}
 	# 	end
 	# end
 
-	chord_shapes[chord.root.name+chord.kind] = fret_region
+	chord_shapes[note_names_in_chord.join(",")] = fret_region
 end
 
 chord_shapes.each do |name, chord_shape|
