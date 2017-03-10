@@ -1,4 +1,5 @@
 require 'awesome_print'
+require 'colorize'
 require 'musique'
 require 'optparse'
 
@@ -137,17 +138,45 @@ chord_shapes = {}
 	chord_shapes[note_names_in_chord.join(",")] = fret_region
 end
 
+to_print = {
+	:chord_name => "",
+	0 => "",
+	1 => "",
+	2 => "",
+	3 => "",
+	4 => "",
+	5 => ""
+}
+
 chord_shapes.each do |name, chord_shape|
-	ap name
+
+	margin 								= 3
+	name_length 						= name.length# + 2  #plus two for the quotation marks from awesome_print
+	fret_line_length 					= @options[:position_size] * 3
+	length_of_chord_display 			= [fret_line_length, name_length].max
+	num_padding_spaces_to_chord_name 	= length_of_chord_display - name_length + margin
+	num_padding_spaces_to_fret_line 	= length_of_chord_display - fret_line_length + margin
+
+	to_print[:chord_name] += name
+	num_padding_spaces_to_chord_name.times{to_print[:chord_name] += " "}
+	# ap name
 	# chord_shape = transpose(chord_shape)
 	chord_shape.reverse!
-	chord_shape.each do |string|
+	chord_shape.each_with_index do |string, string_num|
 		string.each do |fret|
-			print (fret + "  ")[0..2]
+			to_print[string_num] += (fret + "  ")[0..2]
+			# print (fret + "  ")[0..2]
 		end
-		puts
+		num_padding_spaces_to_fret_line.times{to_print[string_num] += " "}
+		# puts
 	end
-	puts
+	# puts
+end
+
+chord_name_line = true
+to_print.each do |string_num, text|
+	chord_name_line ? (puts text.yellow) : (puts text)
+	chord_name_line = false
 end
 
 
