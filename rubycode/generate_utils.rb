@@ -47,13 +47,26 @@ puts
 puts
 
 LETTER_MAP = {
-	'A'=> 1.0,
-	'B'=> 2.0,
-	'C'=> 3.0,
-	'D'=> 4.0,
-	'E'=> 5.0,
-	'F'=> 6.0,
-	'G'=> 7.0
+		  'B'=> 0.0,
+	'C'=> 0.5, 'A'=> 5.0,
+	'D'=> 1.5, 'G'=> 4.0,
+	'E'=> 2.5, 'F'=> 3.0,
+
+	# 'B'=> 0.0,
+	# 'C'=> 0.5,
+	# 'D'=> 1.5,
+	# 'E'=> 2.5,
+	# 'F'=> 3.0,
+	# 'G'=> 4.0,
+	# 'A'=> 5.0
+
+	# 'A'=> 1.0,
+	# 'B'=> 2.0,
+	# 'C'=> 3.0,
+	# 'D'=> 4.0,
+	# 'E'=> 5.0,
+	# 'F'=> 6.0,
+	# 'G'=> 7.0
 
 }
 MINOR_SECOND = Music::Interval.new(2, :minor)
@@ -71,7 +84,7 @@ def note_to_number(note)
 	end
 	# ap base
 
-	return base%7
+	return base%6  #should never loop because no double sharps
 end
 
 # def transpose(matrix)
@@ -108,16 +121,16 @@ end
 
 end
 
-# ap @fretboard
+ap @fretboard
 
 chord_shapes = {}
 @options[:chord_progression].each do |chord|
-	fret_region = []
-	notes_in_chord = chord#.notes#.map(&:name)
+	fret_region 	= []
+	notes_in_chord 	= chord#.notes#.map(&:name)
 
 	chord_to_num_translator = {}
-	note_names_in_chord = notes_in_chord.map(&:name)
-	note_nums_in_chord = notes_in_chord.map{|note| note_to_number(note)}
+	note_names_in_chord 	= notes_in_chord.map(&:name)
+	note_nums_in_chord 		= notes_in_chord.map{|note| note_to_number(note)}
 	chord_to_num_translator = Hash[note_nums_in_chord.zip(note_names_in_chord)]
 
 	@fretboard.each_with_index do |string, string_num|
